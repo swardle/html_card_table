@@ -1,13 +1,9 @@
-/**
- Copyright 2019 Itay Grudev
- License: MIT
- */
 
  .ciclegraph {
   background: url("../img/table.png") no-repeat center center; 
 	position: relative;
-  width: 500px;
-  height: 500px;
+  width: 800px;
+  height: 520px;
   margin: 10% auto 0 auto;
 }
 
