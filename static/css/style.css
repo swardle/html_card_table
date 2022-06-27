@@ -7,7 +7,7 @@
   margin: 10% auto 0 auto;
 }
 
-.ciclegraph:before {
+/* .ciclegraph:before {
 	content: "";
 	position: absolute;
 	top: 0; left: 0;
@@ -15,15 +15,15 @@
   width: calc( 100% - 2px * 2);
   height: calc( 100% - 2px * 2 );
   border-radius: 50%;
-}
+} */
 
 .ciclegraph .circle {
 	position: absolute;
 	top: 50%; left: 50%;
-  width: 167px;
-  height: 167px;
+  /* width: 167px;
+  height: 167px; */
   margin: calc( -167px / 2 );
-  background: teal;
+  /* background: teal; */
 }
 
 .background {
@@ -34,7 +34,25 @@
   background-size: cover;
 }
 
+.player{
+  display: inline-block;
+  position: relative;
+  margin: 10%;
+}
+
 
 #main_player {
   background: rgb(128, 73, 0);
 }
+
+img.nametag{
+  position: absolute;
+  top:138px;
+  right: 0px;
+}
+
+img.numcard{
+  margin: 13% auto 0% -5%;
+}
+
+
