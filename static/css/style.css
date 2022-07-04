@@ -1,5 +1,5 @@
 
- .ciclegraph {
+ .CircularTable {
   background: url("../img/table.png") no-repeat center center; 
 	position: relative;
   width: 800px;
@@ -7,7 +7,7 @@
   margin: 10% auto 0 auto;
 }
 
-/* .ciclegraph:before {
+.CircularTable:before {
 	content: "";
 	position: absolute;
 	top: 0; left: 0;
@@ -15,15 +15,15 @@
   width: calc( 100% - 2px * 2);
   height: calc( 100% - 2px * 2 );
   border-radius: 50%;
-} */
+}
 
-.ciclegraph .circle {
+.CircularTable .PlayerContainer {
 	position: absolute;
 	top: 50%; left: 50%;
-  /* width: 167px;
-  height: 167px; */
-  margin: calc( -167px / 2 );
-  /* background: teal; */
+  width: 8em;
+  height: 8em;
+  margin: calc( -8em / 2 );
+  background: teal;
 }
 
 .background {
@@ -34,25 +34,55 @@
   background-size: cover;
 }
 
-.player{
-  display: inline-block;
-  position: relative;
-  margin: 10%;
-}
-
 
 #main_player {
-  background: rgb(128, 73, 0);
 }
 
-img.nametag{
-  position: absolute;
-  top:138px;
-  right: 0px;
+
+/* The picture of the player */ 
+.PlayerPhoto {
+  width: 8em;
 }
 
-img.numcard{
-  margin: 13% auto 0% -5%;
+/* The Tag that will have the name of the player */ 
+.NameTag {
+  width: 8em;
+  transform: scale(1.7);
+}
+
+/* Information on the number of cards */ 
+.NumCards {
+  width: 8em;
+  transform: translate(0em, 1em) scale(1.5);
+}
+
+/* the players name text field */
+.PlayerName {
+  margin: 0em;
+}
+
+/* the starting div of the PlayerContainer */ 
+.PlayerContainer {
+  position: relative;
+  box-shadow: 0 0.125em 0.25em 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 8em;
+  border-radius: 1em;
+}
+
+/* the starting div all of the player data */ 
+.PlayerDataContainer {
+  position: relative;
+}
+
+/* the Player Name Text Box */ 
+.PlayerNameTextBox {
+  position: absolute;    
+  text-align: center;
+  left: 1.5em;
+  top: 0.0em;
+  font-size: 20px; /*or whatever you want*/
+  color: rgb(255, 255, 255);    
 }
 
 
