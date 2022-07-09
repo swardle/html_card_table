@@ -19,7 +19,6 @@
             angle += dangle
         }
     })  
-    myFunction();
 })
 
 

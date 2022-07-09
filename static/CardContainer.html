@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+    <script src="js/CardSprites.js"></script>
+
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<script>
+    window.addEventListener('load', function () {
+        addCardSprites();
+        hand = randomCards(5);
+        var divs = document.getElementsByClassName('CardContainer');
+
+        let i = 0;
+        for (const card of hand) {
+            let str = '<img id="export_cards_$" class="Cards" style="transform: translate(0em, 0em);" src="img/img_trans.gif" width="1" height="1">'
+            str = str.replace("export_cards_$",cardToSpriteName(card))
+
+            for (const div of divs) {
+                let str_style = str.replace("transform: translate(0em, 0em);",`transform: translate(${i*3}em, ${0}em);`)
+                div.innerHTML += str_style ;
+                i++;
+            }
+
+        }
+    })
+</script>
+
+
+<body>
+
+    <h2>Card</h2>
+
+    <div class="CardContainer" style="top: 8em; left: 8em">
+    </div>
+
+</body>
+
+</html>
