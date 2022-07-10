@@ -38,15 +38,19 @@
 #main_player {
 }
 
-/*
+
 .CardContainer {
   position: relative;
+  width: 34em;
+  height: 12em;
+  box-shadow: 0 0.125em 0.25em 0 rgba(0,0,0,0.2);
+  border: 2px solid rgb(0, 0, 0);
 }
 
 .CardContainer .Cards {
 	position: absolute;
+  width: 8em;
 }
-*/
 
 
 /* the starting div of the PlayerContainer */ 
