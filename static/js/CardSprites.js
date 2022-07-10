@@ -18,8 +18,18 @@ function cardToSpriteFileName(card) {
     return getCardName(card.value, card.suit) + ".png";
 }
 
+function SpriteFileNameToCard(cardFileName) {
+    // `Card_${ZeroPad(value, 2)}_${suit}.png   `
+    const cardData = cardFileName.split("_");
+    const value = cardData[1];
+    const suit = cardData[2].split(".")[0];
+    card = {"value" : parseInt(value), "suit" : suit}
+    return card;
+}
+
+
 function indexToValue(index) {
-    let value = (13 - (index % 13)) + 1;
+    let value = (13 - (index % 13));
     return value;
 }
 
@@ -35,7 +45,7 @@ function randomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function sortCardsByValue(a,b) {      
+function sortCardsByValue(a,b) {
     valueDiff = a.value - b.value;
     if(valueDiff == 0)
     {

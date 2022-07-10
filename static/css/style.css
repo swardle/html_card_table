@@ -52,6 +52,15 @@
   width: 8em;
 }
 
+.OverCardContainer {
+  background: rgb(196, 25, 25);
+}
+
+.HideCard {
+  display: none
+}
+
+
 
 /* the starting div of the PlayerContainer */ 
 .PlayerContainer {
