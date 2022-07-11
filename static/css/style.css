@@ -40,7 +40,7 @@
 
 
 .CardContainer {
-  position: relative;
+	position: absolute;
   width: 34em;
   height: 12em;
   box-shadow: 0 0.125em 0.25em 0 rgba(0,0,0,0.2);
@@ -60,6 +60,10 @@
   display: none
 }
 
+
+.hide {
+  display: none
+}
 
 
 /* the starting div of the PlayerContainer */ 

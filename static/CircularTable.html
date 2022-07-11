@@ -1,17 +1,67 @@
 <!DOCTYPE HTML>
 <html>
 <script src="js/CircularTable.js"></script>
+<script src="js/CardSprites.js"></script>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
+<script>
+    window.addEventListener('load', function () {
+        let deck = CreateDeck();
+        let hands = []
+        let numPlayer = 3
+        for (let i = 0; i < numPlayer; i++) {
+            hands.push([]);
+        }
+
+        // deal all of the cards
+        while (deck.length != 0) {
+            for (let i = 0; i < numPlayer; i++) {
+                let card = deck.pop();
+                hands[i].push(card)
+                if (deck.length == 0) {
+                    break;
+                }
+            }
+        }
+
+        DrawCardContainers(hands, numPlayer)
+
+        const boxes = document.querySelectorAll('.CardContainer');
+        boxes.forEach(box => {
+            box.addEventListener('dragenter', dragEnter)
+            box.addEventListener('dragover', dragOver);
+            box.addEventListener('dragleave', dragLeave);
+            box.addEventListener('drop', (e) => {
+                    return drop(e, hands, numPlayer);
+                });
+        });
+
+    })
+</script>
+
+
 <body style="overflow:hidden; margin:0" class="background">
 
     <div>
         <div class="CircularTable">
-            <div class="PlayerContainer" id="main_player"><img class="PlayerPhotoImg" src="img/Photo01.png">
+            <div id="CardContainer1" class="CardContainer" style="top: 12em; left: 11em">
+            </div>
+            <div id="CardContainer2" class="CardContainer hide" style="top: 60em; left: 16em">
+            </div>        
+            <div class="PlayerContainer" id="main_player">
+                <img class="PlayerPhotoImg" src="img/Photo01.png">
+                <div class="PlayerDataContainer">
+                    <img class="SpeechBubbleImg" src="img/SpeechBubble.png">
+                    <h4 class="SpeechBubbleText"><b>Pass</b></h4>
+                    <img class="PlayerNameImg" src="img/NameTag.png">
+                    <h4 class="PlayerNameText"><b>John Doe</b></h4>
+                    <div id="CardContainer0" class="CardContainer" style="top: 2.5em; left: -8em">
+                    </div>        
+                </div>        
             </div>
             <div class="PlayerContainer" `>
                 <img class="PlayerPhotoImg" src="img/Photo02.png">

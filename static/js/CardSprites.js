@@ -27,7 +27,6 @@ function SpriteFileNameToCard(cardFileName) {
     return card;
 }
 
-
 function indexToValue(index) {
     let value = (13 - (index % 13));
     return value;
@@ -45,8 +44,47 @@ function randomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function sortCardsByValue(a,b) {
-    valueDiff = a.value - b.value;
+function getReverseOrder(t) {
+	switch (t){
+	case 1:
+		return 4 // ace is 2nd weakest (like 4 was)
+	case 2:
+		return 3 // 2 is weakest (like 3 was)
+	case 3:
+		return 15 // strongest (like 2 was)
+	case 4:
+		return 14 // 2nd strongest (like ace was)
+	}
+	if (5 <= t && t <= 13) {
+		return 18 - t; // 13 = 5 (3rd weakest), 5 = 13 (like king)
+    }
+	return 0
+}
+
+function getNormalOrder(t) {
+	switch (t){
+    case 1:
+		return 14 // aces beats king
+	case 2:
+		return 15 // 2 beats 2 aces
+	}
+	if (3 <= t && t <= 13) {
+		return t; // 13 = 5 (3rd weakest), 5 = 13 (like king)
+    }
+	return 0
+}
+
+function sortCardsByNormalOrder(a,b) {
+    return sortCardsByValue(a,b,getNormalOrder);
+}
+
+function sortCardsByReverseOrder(a,b) {
+    return sortCardsByValue(a,b,getReverseOrder);
+}
+
+
+function sortCardsByValue(a,b,sortorder) {
+    valueDiff = sortorder(a.value) - sortorder(b.value);
     if(valueDiff == 0)
     {
         const suitA = a.suit.toLowerCase();
@@ -102,10 +140,95 @@ function randomCards(n) {
         hand.push(card)
     }
 
-    hand.sort(sortCardsByValue);
+    hand.sort(sortCardsByNormalOrder);
     return hand;
 }
 
+
+function DrawCardContainers(hands, numPlayer) {
+    for (let player_index = 0; player_index < numPlayer; player_index++) {
+        let cardpos = 0;
+        let div = document.getElementById(`CardContainer${player_index}`);
+        div.innerHTML = "";
+        hands[player_index].sort(sortCardsByNormalOrder);
+        for (const card of hands[player_index]) {                
+            const str = `<img id="${cardToSpriteFileName(card)}" class="Cards" ` + 
+                `src="img/${cardToSpriteFileName(card)}" ` +
+                `style="transform: translate(${cardpos * 1.5}em, ${0}em);">`
+            div.innerHTML += str;
+            cardpos++;
+        }
+    }
+
+    const items = document.querySelectorAll('.Cards');
+
+    items.forEach(item => {
+        item.addEventListener('dragstart', dragStart);
+    });
+
+    function dragStart(e) {
+        // sort the card that we are moving
+        e.dataTransfer.setData('text/plain', e.target.id);
+        const id = e.target.id
+        console.log(`e.dataTransfer.setData = ${id}`)
+
+        // find the card in the user hands and remove it
+        const container = e.target.parentNode
+        const container_id = container.id.replace("CardContainer","");                        
+        const len = hands[container_id].length
+        for (let i = 0; i < len; i++) {
+            const card = hands[container_id][i];
+            if (cardToSpriteFileName(card) === id) {
+                hands[container_id].splice(i, 1);
+                break;
+            }
+        }
+
+        // remove the card from the container only once it is dragged.
+        setTimeout(() => {
+            e.target.classList.add('HideCard');
+        }, 0);
+    }
+}
+
+function dragEnter(e) {
+    // enable drag and drop on the item
+    e.preventDefault();
+    // change the style of the CardContainer
+    // when the card could be dropped on this CardContainer
+    e.currentTarget.classList.add('OverCardContainer');
+}
+
+function dragOver(e) {
+    // enable drag and drop on the item
+    e.preventDefault();
+    // change the style of the CardContainer
+    // when the card could be dropped on this CardContainer
+    e.currentTarget.classList.add('OverCardContainer');
+}
+
+function dragLeave(e) {
+    e.currentTarget.classList.remove('OverCardContainer');
+}
+
+function drop(e, hands, numPlayer) {
+    e.currentTarget.classList.remove('OverCardContainer');
+    // get the draggable element
+    const id = e.dataTransfer.getData('text/plain');
+    console.log(`e.dataTransfer.getData = ${id}`)
+    const draggable = document.getElementById(id);
+
+    // add it to the drop target
+    e.currentTarget.appendChild(draggable);
+    let container_id = e.currentTarget.id.replace("CardContainer","");
+
+    // sort the and position cards
+    hands[container_id].push(SpriteFileNameToCard(id));
+    DrawCardContainers(hands, numPlayer);
+
+    // display the draggable element
+    draggable.classList.remove('HideCard');            
+}
 
 
 

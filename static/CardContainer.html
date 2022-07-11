@@ -10,51 +10,6 @@
 </head>
 
 <script>
-    function DrawCardContainers(hands, numPlayer) {
-        for (let player_index = 0; player_index < numPlayer; player_index++) {
-            let cardpos = 0;
-            let div = document.getElementById(`CardContainer${player_index}`);
-            div.innerHTML = "";
-            hands[player_index].sort(sortCardsByValue);
-            for (const card of hands[player_index]) {                
-                const str = `<img id="${cardToSpriteFileName(card)}" class="Cards" ` + 
-                    `src="img/${cardToSpriteFileName(card)}" ` +
-                    `style="transform: translate(${cardpos * 1.5}em, ${0}em);">`
-                div.innerHTML += str;
-                cardpos++;
-            }
-        }
-
-        const items = document.querySelectorAll('.Cards');
-
-        items.forEach(item => {
-            item.addEventListener('dragstart', dragStart);
-        });
-
-        function dragStart(e) {
-            // sort the card that we are moving
-            e.dataTransfer.setData('text/plain', e.target.id);
-            const id = e.target.id
-            console.log(`e.dataTransfer.setData = ${id}`)
-
-            // find the card in the user hands and remove it
-            const container = e.target.parentNode
-            const container_id = container.id.replace("CardContainer","");                        
-            const len = hands[container_id].length
-            for (let i = 0; i < len; i++) {
-                const card = hands[container_id][i];
-                if (cardToSpriteFileName(card) === id) {
-                    hands[container_id].splice(i, 1);
-                    break;
-                }
-            }
-
-            // remove the card from the container only once it is dragged.
-            setTimeout(() => {
-                e.target.classList.add('HideCard');
-            }, 0);
-        }
-    }
     window.addEventListener('load', function () {
         let deck = CreateDeck();
         let hands = []
@@ -74,57 +29,88 @@
             }
         }
 
+
+        let moving = null;
+
+
+        function pickup(event) {
+            moving = event.target;
+
+            moving.style.height = moving.clientHeight;
+            moving.style.width = moving.clientWidth;
+            moving.style.position = 'fixed';
+            moving.style.zIndex = '-10';
+        }
+
+        function move(event) {
+            if (moving) {
+                if (event.clientX) {
+                    // mousemove
+                    moving.style.left = event.clientX - moving.clientWidth/2;
+                    moving.style.top = event.clientY - moving.clientHeight/2;
+                } else {
+                    // touchmove - assuming a single touchpoint
+                    moving.style.left = event.changedTouches[0].clientX - moving.clientWidth/2;
+                    moving.style.top = event.changedTouches[0].clientY - moving.clientHeight/2;
+                }
+            }
+        }
+
+        function drop(event) {
+            if (moving) {
+                if (event.currentTarget.tagName !== 'HTML') {
+                    let target = null;
+                    if (event.clientX) {
+                        target = document.elementFromPoint(event.clientX, event.clientY);
+                    } else {
+                        target = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+                    }
+                    const id = moving.id;
+                    console.log(`dropped = ${id}`)
+                    let container_id = target.id.replace("CardContainer","");
+
+                    // sort the and position cards
+                    hands[container_id].push(SpriteFileNameToCard(id));
+                    DrawCardContainers(hands, numPlayer);
+                }
+                moving = null;
+            }
+        }
+
         DrawCardContainers(hands, numPlayer)
 
-        const boxes = document.querySelectorAll('.CardContainer');
+        const body = document.getElementsByTagName("BODY");          
+        body.forEach(item => {
+            item.addEventListener('mouseup', (e) => {
+                    return drop(e, hands, numPlayer);
+                });
+            item.addEventListener('touchend', (e) => {
+                return drop(e, hands, numPlayer);
+            });
+            item.addEventListener('mousemove', (e) => {
+                return move(e, hands, numPlayer);
+            });
+            item.addEventListener('touchmove', (e) => {
+                return move(e, hands, numPlayer);
+            });});
 
-        boxes.forEach(box => {
-            box.addEventListener('dragenter', dragEnter)
-            box.addEventListener('dragover', dragOver);
-            box.addEventListener('dragleave', dragLeave);
-            box.addEventListener('drop', drop);
+        const boxes = document.querySelectorAll('.CardContainer');
+        boxes.forEach(item => {
+            item.addEventListener('mouseup', (e) => {
+                return drop(e, hands, numPlayer);
+            });
+            item.addEventListener('touchend', (e) => {
+                return drop(e, hands, numPlayer);
+            });
+        });
+
+        const cards = document.querySelectorAll('.Cards');
+        cards.forEach(item => {
+            item.addEventListener('mousedown', pickup(e));
+            item.addEventListener('touchstart', pickup(e));
         });
 
 
-
-        function dragEnter(e) {
-            // enable drag and drop on the item
-            e.preventDefault();
-            // change the style of the CardContainer
-            // when the card could be dropped on this CardContainer
-            e.currentTarget.classList.add('OverCardContainer');
-        }
-
-        function dragOver(e) {
-            // enable drag and drop on the item
-            e.preventDefault();
-            // change the style of the CardContainer
-            // when the card could be dropped on this CardContainer
-            e.currentTarget.classList.add('OverCardContainer');
-        }
-
-        function dragLeave(e) {
-            e.currentTarget.classList.remove('OverCardContainer');
-        }
-
-        function drop(e) {
-            e.currentTarget.classList.remove('OverCardContainer');
-            // get the draggable element
-            const id = e.dataTransfer.getData('text/plain');
-            console.log(`e.dataTransfer.getData = ${id}`)
-            const draggable = document.getElementById(id);
-
-            // add it to the drop target
-            e.currentTarget.appendChild(draggable);
-            let container_id = e.currentTarget.id.replace("CardContainer","");
-
-            // sort the and position cards
-            hands[container_id].push(SpriteFileNameToCard(id));
-            DrawCardContainers(hands, numPlayer);
-
-            // display the draggable element
-            draggable.classList.remove('HideCard');            
-        }
     })
 </script>
 
@@ -133,13 +119,13 @@
 
     <h2>Card</h2>
 
-    <div id="CardContainer0" class="CardContainer">
+    <div id="CardContainer0" class="CardContainer" style="top: 5em; left: 2em">
     </div>
 
-    <div id="CardContainer1" class="CardContainer">
+    <div id="CardContainer1" class="CardContainer"  style="top: 20em; left: 2em">
     </div>
 
-    <div id="CardContainer2" class="CardContainer">
+    <div id="CardContainer2" class="CardContainer"  style="top: 35em; left: 2em">
     </div>
 
 </body>

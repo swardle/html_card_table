@@ -8,19 +8,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
+<script src="js/CardSprites.js"></script>
+
+<script>
+    window.addEventListener('load', function () {
+        let deck = CreateDeck();
+        let hands = []
+        let numPlayer = 3
+        for (let i = 0; i < numPlayer; i++) {
+            hands.push([]);
+        }
+
+        // deal all of the cards
+        while (deck.length != 0) {
+            for (let i = 0; i < numPlayer; i++) {
+                let card = deck.pop();
+                hands[i].push(card)
+                if (deck.length == 0) {
+                    break;
+                }
+            }
+        }
+
+        DrawCardContainers(hands, numPlayer)
+
+        const boxes = document.querySelectorAll('.CardContainer');
+
+        boxes.forEach(box => {
+            box.addEventListener('dragenter', dragEnter)
+            box.addEventListener('dragover', dragOver);
+            box.addEventListener('dragleave', dragLeave);
+            box.addEventListener('drop', (e) => {
+                    return drop(e, hands, numPlayer);
+                });
+        });
+
+    })
+</script>
+
 <body>
 
     <h2>Card</h2>
+    <div id="CardContainer1" class="CardContainer" style="top: 5em; left: 8em">
+    </div>
+    <div id="CardContainer2" class="CardContainer hide" style="top: 45em; left: 16em">
+    </div>
 
-    <div class="PlayerContainer" style="top: 8em; left: 8em">
+    <div class="PlayerContainer" style="top: 15em; left: 8em">
         <img class="PlayerPhotoImg" src="img/Photo01.png">
         <div class="PlayerDataContainer">
             <img class="SpeechBubbleImg" src="img/SpeechBubble.png">
             <h4 class="SpeechBubbleText"><b>Pass</b></h4>
             <img class="PlayerNameImg" src="img/NameTag.png">
             <h4 class="PlayerNameText"><b>John Doe</b></h4>
+            <div id="CardContainer0" class="CardContainer" style="top: 2.5em; left: -8em">
+            </div>        
         </div>
     </div>
+
+
 
 </body>
 
