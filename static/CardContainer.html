@@ -29,16 +29,12 @@
             }
         }
 
-        DrawCardContainers(g_card_containers)
-
-        const boxes = document.querySelectorAll('.CardContainer');
-        boxes.forEach(item => {
-            item.addEventListener('mouseup', (event) => { return drop(event, g_card_containers); });
-            item.addEventListener('touchend', (event) => { return drop(event, g_card_containers); });
-            item.addEventListener('mousemove', move);
-            item.addEventListener('touchmove', move);
-        });
-
+        SetGlobalCardContainers(g_card_containers);
+        DrawCardContainers(g_card_containers);
+        document.body.addEventListener('mousemove', move); 
+        document.body.addEventListener('touchmove', move); 
+        document.body.addEventListener('mouseup', drop);
+        document.body.addEventListener('touchend', drop);
     })
 </script>
 
@@ -46,6 +42,8 @@
 <body>
 
     <h2>Card</h2>
+    <img id="Card_13_Spades.png" class="Cards MovableCard HideCard" src="img/Card_13_Spades.png" 
+        style="position:fixed; left:0px; top:0px; z-index: 1000;">
     <div id="CardContainer0" class="CardContainer" style="top: 5em; left: 2em">
     </div>
 
@@ -54,9 +52,6 @@
 
     <div id="CardContainer2" class="CardContainer" style="top: 35em; left: 2em">
     </div>
-
-    <div id="rectangle" style="width:10px; height:10px; background:#00f; position:fixed; top:80px; left:600px;"></div>
-
 </body>
 
 </html>

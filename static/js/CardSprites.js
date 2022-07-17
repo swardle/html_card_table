@@ -143,6 +143,10 @@ function randomCards(n) {
     return hand;
 }
 
+let g_card_containers = null;
+function SetGlobalCardContainers(card_containers) {
+    g_card_containers = card_containers;
+}
 
 function DrawCardContainers(hands) {
     let numPlayer = hands.length;
@@ -213,9 +217,8 @@ function findDropTarget(event) {
 
 function pickup(event) {
     console.log(`pickup event.target ${event.target.id}`)
-    console.log(`pickup event.currentTarget ${event.currentTarget.id}`)
-    g_moving = event.target;
-    let g_moving_rect = g_moving.getBoundingClientRect();
+        let moving = event.target;
+    let moving_rect = moving.getBoundingClientRect();
     let event_x = 0;
     let event_y = 0;
     if (event.clientX) {
@@ -227,39 +230,44 @@ function pickup(event) {
         event_x = event.changedTouches[0].clientX;
         event_y = event.changedTouches[0].clientY;
     }
-    g_moving_offset_x = event_x - g_moving_rect.left;
-    g_moving_offset_y = event_y - g_moving_rect.top;
+    g_moving_offset_x = event_x - moving_rect.left;
+    g_moving_offset_y = event_y - moving_rect.top;
 
-    g_old_target = findDropTarget(event);
+    g_old_target = getCardContainer(moving);
+    let from_container_id = g_old_target.id.replace("CardContainer", "");
 
-    let from_container = getCardContainer(g_moving);
-    let from_container_id = from_container.id.replace("CardContainer", "");
-
-    const n = card_containers[from_container_id].length;
-    let hand = card_containers[from_container_id];
+    const n = g_card_containers[from_container_id].length;
+    let hand = g_card_containers[from_container_id];
     // remove the card from the old container
     let card = hand[0];
     for (let i = 0; i < n; i++) {
         card = hand[i];
-        if (cardToSpriteFileName(card) == g_moving.id) {
+        if (cardToSpriteFileName(card) == moving.id) {
             hand.splice(i, 1);
             break;
         }
     }
 
-    const elements = document.querySelectorAll('.CircularTable');
-    for (e of elements) {
-        const str = `<img id="${cardToSpriteFileName(card)}" class="Cards" ` +
-        `src="img/${cardToSpriteFileName(card)}" ` +
-        `position:fixed; left:${event_x - g_moving_offset_x}px;` +
-        `top:${event_y - g_moving_offset_y}px; z-index: 1000;`;
-        e.innerHTML += str;
+    const moveable_cards = document.getElementsByClassName('MovableCard');
+    for (e of moveable_cards) {
+        g_moving = e;
         break;
     }
 
-    const newcard = document.querySelector(`#${cardToSpriteFileName(card)}`);
-    g_moving = newcard;
-    event.preventDefault();
+    event.target.classList.add("HideCard");
+    g_moving.src=`img/${cardToSpriteFileName(card)}`;
+    g_moving.id=`${cardToSpriteFileName(card)}`;
+    g_moving.style.cssText = `position:fixed; left:${event_x - g_moving_offset_x}px;` +
+        `top:${event_y - g_moving_offset_y}px; z-index: 1000;`;
+
+    g_moving.classList.remove("HideCard");
+    // console.log(`moving is ${g_moving.id}`)
+    if (event.clientX) {
+        // mousemove
+        event.preventDefault();
+    } else {
+        // touchmove - assuming a single touchpoint
+    }
 }
 
 function move(event) {
@@ -276,6 +284,7 @@ function move(event) {
             event_y = event.changedTouches[0].clientY;
         }
 
+        
         g_moving.style.cssText = `position:fixed; left:${event_x - g_moving_offset_x}px;` +
             `top:${event_y - g_moving_offset_y}px; z-index: 1000;`;
         let target = findDropTarget(event);
@@ -294,42 +303,35 @@ function move(event) {
     }
 }
 
-function drop(event, card_containers) {
-    if (g_moving) {
+function drop(event) {
+    if (g_moving && g_old_target) {
         if (event.currentTarget.tagName !== 'HTML') {
-            let target = findDropTarget(event, event);
+            let target = findDropTarget(event);
             if (target === null) {
                 target = g_old_target;
             }
             let target_container = target;
-            let from_container = getCardContainer(g_moving);
+            let from_container = g_old_target;
             console.log(`dropped = ${g_moving.id} on ${target_container.id} from ${from_container.id}`)
             let target_container_id = target_container.id.replace("CardContainer", "");
-            let from_container_id = from_container.id.replace("CardContainer", "");
-
-            const n = card_containers[from_container_id].length;
-            let hand = card_containers[from_container_id];
-            // remove the card from the old container
-            for (let i = 0; i < n; i++) {
-                const card = hand[i];
-                if (cardToSpriteFileName(card) == g_moving.id) {
-                    hand.splice(i, 1);
-                    break;
-                }
-            }
 
             // add the card to target_container
-            hand = card_containers[target_container_id];
+            hand = g_card_containers[target_container_id];
             // sort the and position cards
             hand.push(SpriteFileNameToCard(g_moving.id));
-            DrawCardContainers(card_containers)
+
+            DrawCardContainers(g_card_containers)
             const elements = document.querySelectorAll('.OverCardContainer');
             elements.forEach(element => {
                 element.classList.remove("OverCardContainer");
             });
+            g_moving.classList.add("HideCard");
+            g_moving.style.cssText = `position:fixed; left:${0}px;` +
+            `top:${0}px; z-index: 1000;`;
 
+            g_moving = null;
+            g_old_target = null;
         }
-        g_moving = null;
     }
 }
 

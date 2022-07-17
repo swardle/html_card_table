@@ -28,21 +28,19 @@
             }
         }
 
-        DrawCardContainers(g_card_containers)
-
-        const boxes = document.querySelectorAll('.CardContainer');
-        boxes.forEach(item => {
-            item.addEventListener('mouseup', (event) => { return drop(event, g_card_containers); });
-            item.addEventListener('touchend', (event) => { return drop(event, g_card_containers); });
-            item.addEventListener('mousemove', move);
-            item.addEventListener('touchmove', move);
-        });
-
+        SetGlobalCardContainers(g_card_containers);
+        DrawCardContainers(g_card_containers);
+        document.body.addEventListener('mousemove', move); 
+        document.body.addEventListener('touchmove', move); 
+        document.body.addEventListener('mouseup', drop);
+        document.body.addEventListener('touchend', drop);
     })
 </script>
 
 
 <body style="overflow:hidden; margin:0" class="background">
+    <img id="Card_13_Spades.png" class="Cards MovableCard HideCard" src="img/Card_13_Spades.png" 
+        style="position:fixed; left:0px; top:0px; z-index: 1000;">
 
     <div>
         <div class="CircularTable">
