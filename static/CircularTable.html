@@ -11,33 +11,31 @@
 <script>
     window.addEventListener('load', function () {
         let deck = CreateDeck();
-        let hands = []
+        let g_card_containers = []
         let numPlayer = 3
         for (let i = 0; i < numPlayer; i++) {
-            hands.push([]);
+            g_card_containers.push([]);
         }
 
         // deal all of the cards
         while (deck.length != 0) {
-            for (let i = 0; i < numPlayer; i++) {
+            for (let i = 0; i < g_card_containers.length; i++) {
                 let card = deck.pop();
-                hands[i].push(card)
+                g_card_containers[i].push(card)
                 if (deck.length == 0) {
                     break;
                 }
             }
         }
 
-        DrawCardContainers(hands, numPlayer)
+        DrawCardContainers(g_card_containers)
 
         const boxes = document.querySelectorAll('.CardContainer');
-        boxes.forEach(box => {
-            box.addEventListener('dragenter', dragEnter)
-            box.addEventListener('dragover', dragOver);
-            box.addEventListener('dragleave', dragLeave);
-            box.addEventListener('drop', (e) => {
-                    return drop(e, hands, numPlayer);
-                });
+        boxes.forEach(item => {
+            item.addEventListener('mouseup', (event) => { return drop(event, g_card_containers); });
+            item.addEventListener('touchend', (event) => { return drop(event, g_card_containers); });
+            item.addEventListener('mousemove', move);
+            item.addEventListener('touchmove', move);
         });
 
     })
@@ -51,7 +49,7 @@
             <div id="CardContainer1" class="CardContainer" style="top: 12em; left: 11em">
             </div>
             <div id="CardContainer2" class="CardContainer hide" style="top: 60em; left: 16em">
-            </div>        
+            </div>
             <div class="PlayerContainer" id="main_player">
                 <img class="PlayerPhotoImg" src="img/Photo01.png">
                 <div class="PlayerDataContainer">
@@ -59,9 +57,9 @@
                     <h4 class="SpeechBubbleText"><b>Pass</b></h4>
                     <img class="PlayerNameImg" src="img/NameTag.png">
                     <h4 class="PlayerNameText"><b>John Doe</b></h4>
-                    <div id="CardContainer0" class="CardContainer" style="top: 2.5em; left: -8em">
-                    </div>        
-                </div>        
+                    <div id="CardContainer0" class="CardContainer" style="top: 2em; left: -11em">
+                    </div>            
+                </div>
             </div>
             <div class="PlayerContainer" `>
                 <img class="PlayerPhotoImg" src="img/Photo02.png">

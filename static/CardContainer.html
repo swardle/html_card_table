@@ -12,130 +12,32 @@
 <script>
     window.addEventListener('load', function () {
         let deck = CreateDeck();
-        let hands = []
+        let g_card_containers = []
         let numPlayer = 3
         for (let i = 0; i < numPlayer; i++) {
-            hands.push([]);
+            g_card_containers.push([]);
         }
 
         // deal all of the cards
         while (deck.length != 0) {
-            for (let i = 0; i < numPlayer; i++) {
+            for (let i = 0; i < g_card_containers.length; i++) {
                 let card = deck.pop();
-                hands[i].push(card)
+                g_card_containers[i].push(card)
                 if (deck.length == 0) {
                     break;
                 }
             }
         }
 
-
-        let moving = null;
-
-        function getCardContainer(target) {
-            let classes = target.classList;
-            for(const c of classes) {
-                if(c === "Cards") {
-                    return target.parentElement;
-                }
-                if(c === "CardContainer") {
-                    return target;
-                }
-            }
-            return null;
-        }
-
-
-        function pickup(event) {
-            console.log(`pickup event.target ${event.target.id}`)
-            console.log(`pickup event.currentTarget ${event.currentTarget.id}`)
-            moving = event.target;
-            moving.style.cssText   = "";
-            event.preventDefault();
-        }
-
-        function move(event) {
-            if (moving) {
-                if (event.clientX) {
-                    // mousemove
-                    moving.style.left = event.clientX - moving.clientWidth / 2;
-                    moving.style.top = event.clientY - moving.clientHeight / 2;
-                    console.log(`moving ${moving.style.cssText} ${moving.getBoundingClientRect()}`)
-                } else {
-                    // touchmove - assuming a single touchpoint
-                    moving.style.left = event.changedTouches[0].clientX - moving.clientWidth / 2;
-                    moving.style.top = event.changedTouches[0].clientY - moving.clientHeight / 2;
-                }
-            }
-            event.preventDefault();
-        }
-
-        function drop(event) {
-            console.log(`drop event.target ${event.target.id}`)
-            console.log(`drop event.currentTarget ${event.currentTarget.id}`)
-            if (moving) {
-                if (event.currentTarget.tagName !== 'HTML') {
-                    let target = null;
-                    if (event.clientX) {
-                        target = document.elementFromPoint(event.clientX, event.clientY);
-                    } else {
-                        target = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
-                    }
-                    let target_container = getCardContainer(target);
-                    let from_container = getCardContainer(moving);
-                    console.log(`dropped = ${moving.id} on ${target_container.id} from ${from_container.id}`)
-                    let target_container_id = target_container.id.replace("CardContainer", "");
-                    let from_container_id = from_container.id.replace("CardContainer", "");
-
-                    const n = hands[from_container_id].length;
-                    let hand = hands[from_container_id];
-                    // remove the card from the old container
-                    for (let i = 0; i < n; i++) {
-                        const card = hand[i];
-                        if(cardToSpriteFileName(card) == moving.id) {
-                            hand.splice(i, 1);
-                            break;
-                        }
-                    }
-                    
-                    // add the card to target_container
-                    hand = hands[target_container_id];
-                    // sort the and position cards
-                    hand.push(SpriteFileNameToCard(moving.id));
-                    DrawCardContainers(hands, numPlayer)
-                    const cards = document.querySelectorAll('.Cards');
-                    cards.forEach(item => {
-                        item.addEventListener('mousedown', pickup);
-                        item.addEventListener('touchstart', pickup);
-                    });
-                }
-                moving = null;
-            }
-        }
-
-        DrawCardContainers(hands, numPlayer)
-        const cards = document.querySelectorAll('.Cards');
-        cards.forEach(item => {
-            item.addEventListener('mousedown', pickup);
-            item.addEventListener('touchstart', pickup);
-            item.addEventListener('mouseup', drop);
-            item.addEventListener('touchend', drop);
-        });
-
-        const body = document.getElementsByTagName("HTML")[0];
-        body.addEventListener('mouseup', drop);
-        body.addEventListener('touchend', drop);
-        body.addEventListener('mousemove', move);
-        body.addEventListener('touchmove', move);
+        DrawCardContainers(g_card_containers)
 
         const boxes = document.querySelectorAll('.CardContainer');
         boxes.forEach(item => {
-            item.addEventListener('mouseup', drop);
-            item.addEventListener('touchend', drop);
+            item.addEventListener('mouseup', (event) => { return drop(event, g_card_containers); });
+            item.addEventListener('touchend', (event) => { return drop(event, g_card_containers); });
             item.addEventListener('mousemove', move);
             item.addEventListener('touchmove', move);
         });
-
 
     })
 </script>
@@ -144,7 +46,6 @@
 <body>
 
     <h2>Card</h2>
-
     <div id="CardContainer0" class="CardContainer" style="top: 5em; left: 2em">
     </div>
 
@@ -153,6 +54,8 @@
 
     <div id="CardContainer2" class="CardContainer" style="top: 35em; left: 2em">
     </div>
+
+    <div id="rectangle" style="width:10px; height:10px; background:#00f; position:fixed; top:80px; left:600px;"></div>
 
 </body>
 
